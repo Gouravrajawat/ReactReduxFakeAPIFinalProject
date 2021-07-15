@@ -60,7 +60,8 @@ class App extends Component {
             <Button variant="info" onClick={() => this.editUser(user.id)}>Edit</Button>
             &nbsp;<Button variant="danger" onClick={() => this.deleteUsers(user.id)}>Delete</Button>
             &nbsp;
-            <Button variant="success" onClick={() => this.favoriteUsers(user.id)}> Add to Favorite</Button>
+            <Button variant="success" onClick={() => this.favoriteUsers(user.id)}>{!user.favorite ? 'Add to Favorite' : 'Remove From Favorite'}</Button>
+
           </td>
         </tr>
       )
@@ -93,7 +94,7 @@ class App extends Component {
       users: users.find((user => user.id === userid))
     })
     const user = users.find((user => user.id === userid))
-    user.favorite = true
+    user.favorite = !user.favorite
 
     const userIndex = users.findIndex(user => user.id === userid)
 
@@ -103,13 +104,13 @@ class App extends Component {
     })
   }
 
-  /* nonFavoriteUsers = userid => {
-     const { users } = this.state;
-     this.setState({
-       users: users.find((user => user.id !== userid))
-     })
-   }
-   */
+  nonFavoriteUsers = userid => {
+    const { users } = this.state;
+    this.setState({
+      users: users.find((user => user.id === userid))
+    })
+  }
+
 
   handleSave = () => {
     const { users } = this.state;
