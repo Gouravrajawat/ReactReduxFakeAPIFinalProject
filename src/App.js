@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import { deleteUsers, editUsers, favoriteUsers, editedUsers, getUsersSuccess, Users } from "./actions";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Dropdown } from "react-bootstrap";
 import './index.css';
-//import { useHistory} from 'react-router-dom';
-//import PublicRoute from "./routes/PublicRoute";
 
 
 class App extends Component {
@@ -12,12 +10,11 @@ class App extends Component {
     super(props)
     this.state = {
       users: [],
-      isLoading: false,
+      isLoading: true,
       isError: false,
-      editUsers: false,
+      enableEdit: false,
       userToEdit: {},
-      Edit: false,
-      user: {},
+      filter: 'all',
     };
     this.onChange = this.onChange.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -45,7 +42,7 @@ class App extends Component {
     return Object.keys(this.state.users[0]).map(attr => <th key={attr}>{attr.toUpperCase()}</th>)
   }
   renderTableRows = () => {
-    return this.state.users.map(user => {
+    return this.filterUser(this.state.filter).map(user => {
       return (
         <tr key={user.id}>
           <td>{user.id}</td>
@@ -60,7 +57,7 @@ class App extends Component {
             {user.favorite ? <span class="glyphicon">&#xe005;</span> : 'Add to favorite'}
           </td>
           <td>
-            <Button variant="info" onClick={() => this.userToEdit(user.id)}>Edit</Button>
+            <Button variant="info" onClick={() => this.editUser(user.id)}>Edit</Button>
             &nbsp;<Button variant="danger" onClick={() => this.deleteUsers(user.id)}>Delete</Button>
             &nbsp;
             <Button variant="success" onClick={() => this.favoriteUsers(user.id)}> Add to Favorite</Button>
@@ -77,24 +74,16 @@ class App extends Component {
     })
   }
 
-
-  editedUsers = (userid) => {
-    const { users } = this.state;
-    this.setState({
-      users: users.find((user => user.id === user.id))
-    })
-  }
-
-
-  userToEdit = id => {
+  editUser = id => {
     const { users } = this.state;
     this.setState({
       users: users.find((user => user.id === id))
     })
     const user = users.find((user => user.id === id))
-    user.edit = true
     this.setState({
-      editedUsers: users,
+      ...this.state,
+      enableEdit: true,
+      userToEdit: user
     })
   }
 
@@ -113,21 +102,49 @@ class App extends Component {
       users: users
     })
   }
-  handleChange(e) {
-    const target = e.target;
-    const value = e.value
-    //  const users = e.target.users;
 
+  /* nonFavoriteUsers = userid => {
+     const { users } = this.state;
+     this.setState({
+       users: users.find((user => user.id !== userid))
+     })
+   }
+   */
+
+  handleSave = () => {
+    const { users } = this.state;
+    const currentUser = users.findIndex((user => this.state.userToEdit.id === user.id))
+    users.splice(currentUser, 1, this.state.userToEdit)
+    console.log("current user: " + currentUser)
     this.setState({
       ...this.state,
-      userToEdit: { ...this.state.userToEdit, [target.name]: value }
-      //  [users]: value,
-      //  editedUsers: users
+      users: users,
+      enableEdit: false,
+    })
+  }
+
+  handleChange(e) {
+    this.setState({
+      ...this.state,
+      userToEdit: { ...this.state.userToEdit, [e.target.name]: e.target.value }
     });
   }
 
-
-
+  filterUser = (option) => {
+    switch (option) {
+      case "all":
+        return this.state.users
+        break;
+      case "fav":
+        return this.state.users.filter(user => user.favorite === true)
+        break;
+      case "nonfav":
+        return this.state.users.filter(user => user.favorite !== true)
+        break;
+      default:
+        return this.state.users;
+    }
+  }
   render() {
     const { users, isLoading, isError } = this.state
     console.log('users', users)
@@ -138,13 +155,20 @@ class App extends Component {
     if (isError) {
       return <div>Error</div>
     }
-
-    return users.length > 0
+    return !this.state.enableEdit
       ? (
         <table id="t01">
           <thead>
             <tr>
               {this.renderTableHeader()}
+              <Dropdown>
+                <Dropdown.Toggle variant="primary"> Dropdown Button </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item value="fav" onClick={() => this.setState({ ... this.state, filter: "fav" })}>Favorite</Dropdown.Item>
+                  <Dropdown.Item value="nonfav" onClick={() => this.setState({ ... this.state, filter: "nonfav" })}>Non-favorite</Dropdown.Item>
+                  <Dropdown.Item value="all" onClick={() => this.setState({ ... this.state, filter: "all" })}>All</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </tr>
           </thead>
           <tbody>
@@ -158,7 +182,8 @@ class App extends Component {
             <Form.Label>ID</Form.Label>
             <Form.Control
               type="text"
-              value={this.state.users.id}
+              name="id"
+              value={this.state.userToEdit.id}
               required
               onChange={this.handleChange}
             />
@@ -167,16 +192,18 @@ class App extends Component {
             <Form.Label>Name</Form.Label>
             <Form.Control
               type="text"
-              value={this.state.users.name}
+              name='name'
+              value={this.state.userToEdit.name}
               required
               onChange={this.handleChange}
             />
           </Form.Group>
           <Form.Group>
-            <Form.Label>userName</Form.Label>
+            <Form.Label>Username</Form.Label>
             <Form.Control
               type="text"
-              value={this.state.users.username}
+              name='username'
+              value={this.state.userToEdit.username}
               required
               onChange={this.handleChange}
             />
@@ -185,7 +212,8 @@ class App extends Component {
             <Form.Label>Email</Form.Label>
             <Form.Control
               type="text"
-              value={this.state.users.email}
+              name='email'
+              value={this.state.userToEdit.email}
               required
               onChange={this.handleChange}
             />
@@ -194,7 +222,8 @@ class App extends Component {
             <Form.Label>Phone</Form.Label>
             <Form.Control
               type="text"
-              value={this.state.users.phone}
+              name='phone'
+              value={this.state.userToEdit.phone}
               required
               onChange={this.handleChange}
             />
@@ -203,12 +232,13 @@ class App extends Component {
             <Form.Label>Website</Form.Label>
             <Form.Control
               type="text"
-              value={this.state.users.website}
+              name='website'
+              value={this.state.userToEdit.website}
               required
               onChange={this.handleChange}
             />
           </Form.Group>
-          <Button variant="success" type="submit">Save</Button>
+          <Button variant="success" onClick={this.handleSave}>Save</Button>
         </div>
       )
   }
