@@ -103,15 +103,6 @@ class App extends Component {
       users: users
     })
   }
-
-  nonFavoriteUsers = userid => {
-    const { users } = this.state;
-    this.setState({
-      users: users.find((user => user.id === userid))
-    })
-  }
-
-
   handleSave = () => {
     const { users } = this.state;
     const currentUser = users.findIndex((user => this.state.userToEdit.id === user.id))
