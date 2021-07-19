@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import { deleteUsers, editUsers, favoriteUsers, editedUsers, getUsersSuccess, Users } from "./actions";
+import { deleteUsers, editUsers, favoriteUsers, editedUsers, getUsersSuccess, editUser1 } from "./actions";
 import { Button, Form, Dropdown } from "react-bootstrap";
 import './index.css';
 
@@ -33,7 +33,7 @@ class App extends Component {
     } else {
       this.setState({ isError: true, isLoading: false })
       this.setState({
-        userToEdit: true
+        // userToEdit: true
       })
       this.props.history.push("/edit")
     }
@@ -61,7 +61,6 @@ class App extends Component {
             &nbsp;<Button variant="danger" onClick={() => this.deleteUsers(user.id)}>Delete</Button>
             &nbsp;
             <Button variant="success" onClick={() => this.favoriteUsers(user.id)}>{!user.favorite ? 'Add to Favorite' : 'Remove From Favorite'}</Button>
-
           </td>
         </tr>
       )
@@ -75,6 +74,7 @@ class App extends Component {
     })
   }
 
+
   editUser = id => {
     const { users } = this.state;
     this.setState({
@@ -87,6 +87,7 @@ class App extends Component {
       userToEdit: user
     })
   }
+
 
   favoriteUsers = userid => {
     const { users } = this.state;
@@ -154,7 +155,7 @@ class App extends Component {
             <tr>
               {this.renderTableHeader()}
               <Dropdown>
-                <Dropdown.Toggle variant="primary"> Dropdown Button </Dropdown.Toggle>
+                <Dropdown.Toggle variant="primary">DROPDOWN</Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item value="fav" onClick={() => this.setState({ ... this.state, filter: "fav" })}>Favorite</Dropdown.Item>
                   <Dropdown.Item value="nonfav" onClick={() => this.setState({ ... this.state, filter: "nonfav" })}>Non-favorite</Dropdown.Item>
@@ -258,8 +259,11 @@ const mapDispatchToProps = dispatch => {
     getUsersSuccess: users => {
       dispatch(getUsersSuccess(users))
     },
-    editedUsers: user => {
-      dispatch(editedUsers(user));
+    editUsers: users => {
+      dispatch(editUsers(users));
+    },
+    editUser1: user => {
+      dispatch(editUser1(user));
     }
   }
 }

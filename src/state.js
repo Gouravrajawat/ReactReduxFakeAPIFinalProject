@@ -3,6 +3,7 @@ const state = {
   isLoading: false,
   editedUsers: {},
   Users: {},
+  userToEdit: {},
 };
 
 export default state;

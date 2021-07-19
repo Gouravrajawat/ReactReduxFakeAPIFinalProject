@@ -5,6 +5,7 @@ export const EDIT_USERS = "EDIT_USERS";
 export const FAVORITE_USERS = "FAVORITE_USERS";
 export const USERS = "USERS";
 export const EDITED_USERS = "EDITED_USERS";
+export const EDIT_USER1 = "EDIT_USER1";
 
 export const getUsers = () => {
   return {
@@ -45,6 +46,12 @@ export const Users = users => {
 export const editedUsers = users => {
   return {
     type: EDITED_USERS,
+    users
+  };
+};
+export const editUser1 = users => {
+  return {
+    type: EDIT_USER1,
     users
   };
 };
